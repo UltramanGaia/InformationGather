@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="InformationGather:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/InformationGather_jar</output-path>
+    <root id="archive" name="InformationGather.jar">
+      <element id="module-output" name="InformationGather" />
+    </root>
+  </artifact>
+</component>
