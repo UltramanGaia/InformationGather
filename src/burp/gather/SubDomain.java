@@ -144,7 +144,7 @@ public class SubDomain {
 
                     for (Thread t: threadPool
                          ) {
-                        t.wait();
+                        t.join();
                     }
 
 
