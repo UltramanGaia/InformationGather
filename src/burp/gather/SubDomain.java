@@ -3,12 +3,13 @@ package burp.gather;
 import burp.gather.utils.NetHelper;
 import burp.gather.utils.Request;
 import burp.gather.utils.Response;
-import org.json.JSONArray;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
+import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Scanner;
 
 public class SubDomain {
     private static final Object[] columnNames = {"Id", "Domain", "Ip", "Status", "Server", "CDN"};
@@ -55,67 +56,52 @@ public class SubDomain {
         return rowData;
     }
 
-    public void querySubDomain(DefaultTableModel model, JLabel noticeField, String wydomainPath, String wydicPath ,String targetDomain){
+    public void querySubDomain(DefaultTableModel model, JLabel noticeField, String teemoPath,String targetDomain){
         new Thread(new Runnable() {
             @Override
             public void run() {
 
                 try {
-                    String wyPath = new File(wydomainPath).getParent();
-
-                    //using dnsburte.py
-                    noticeField.setText("using dnsburte.py to discover subdomains...");
+                    String teemoRootPath = new File(teemoPath).getParent();
+                    Calendar calendar = Calendar.getInstance();
+                    //String t = "-%d-%d-%d-%d-%d"%(, , ,, );
+                    String resultFileName = targetDomain + "-"
+                            + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DATE)
+                            + "-" + calendar.get(Calendar.HOUR_OF_DAY) + "-"+ calendar.get(Calendar.MINUTE) + "-" +".txt";  //baidu.com.12345679.txt
+                    System.out.println("Using teemo.py to discover subdomains...");
+                    noticeField.setText("Using teemo.py to discover subdomains...");
                     noticeField.paintImmediately(noticeField.getBounds());
-                    String[] args1 = new String[]{"python", wyPath+File.separator+"dnsburte.py", "-d", targetDomain, "-f", wydicPath};
+                    String[] args1 = new String[]{"python", teemoPath, "-b","-d", targetDomain, "-o", resultFileName};
                     Process pr = Runtime.getRuntime().exec(args1);
-//            BufferedReader in = new BufferedReader(new InputStreamReader(
-//                    pr.getInputStream()));
-//            String line;
-//            while ((line = in.readLine()) != null) {
-//                System.out.println(line);
-//            }
-//            in.close();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(
+                            pr.getInputStream()));
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                    in.close();
                     pr.waitFor();
+                    System.out.println("Teemo run complete");
 
-                    //using wydomain.py
-                    noticeField.setText("using wydomain.py to discover subdomains...");
-                    noticeField.paintImmediately(noticeField.getBounds());
-                    String[] args2 = new String[]{"python", wydomainPath, "-d", targetDomain, "-o", targetDomain + ".log"};
-                    Process pr2 = Runtime.getRuntime().exec(args2);
-
-//            BufferedReader in2 = new BufferedReader(new InputStreamReader(
-//                    pr2.getInputStream()));
-//            String line2;
-//            while ((line2 = in2.readLine()) != null) {
-//                System.out.println(line2);
-//            }
-//            in2.close();
-                    pr2.waitFor();
-
-                    noticeField.setText("done...parsing subdomains...");
-                    noticeField.paintImmediately(noticeField.getBounds());
+                    noticeField.setText("Teemo run complete...Try scanning the subdomains.....");
 
                     // parse target domain log
-
-                    String logFileName = wyPath + File.separator + targetDomain + ".log";
+                    HashSet<String> subDomains = new HashSet<String>(); //subdomains
+                    String logFileName = teemoRootPath + File.separator + "output" + File.separator +  resultFileName;
                     String logFileContent = readToString(logFileName);
 //                    System.out.println(logFileContent);
+                    Scanner scanner = new Scanner(logFileContent);
+
+                    while(scanner.hasNext()){
+                        String subdomain = scanner.next();
+                        if(subdomain.indexOf('@') != -1) //result end
+                            break;
+                        System.out.println(subdomain);
+                        subDomains.add(subdomain);
+                    }
 
                     model.setRowCount(0);
-                    JSONArray jsonSubDomainArray = new JSONArray(logFileContent);
 
-                    HashSet<String> dic = new HashSet<String>(); //读取字典列表
-                    for(int i = 0; i < jsonSubDomainArray.length(); i++){
-                        dic.add(jsonSubDomainArray.getString(i));
-                    }
-                    // burte dic by myself
-//                    String content = readToString(wydicPath);
-//                    Scanner scanner = new Scanner(content);
-//                    while(scanner.hasNext()){
-//                        String head = scanner.next();
-//                        System.out.println(head);
-//                        dic.add(head+"."+targetDomain);
-//                    }
 
                     int t_num = 20;
                     Thread [] threadPool = new Thread[t_num];
@@ -124,12 +110,12 @@ public class SubDomain {
                         threadPool[i] = new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                while(dic.size() != 0){
+                                while(subDomains.size() != 0){
                                     String subDomain = null;
-                                    synchronized (dic){
-                                        subDomain = dic.iterator().next();
+                                    synchronized (subDomains){
+                                        subDomain = subDomains.iterator().next();
                                         System.out.println(subDomain);
-                                        dic.remove(subDomain);
+                                        subDomains.remove(subDomain);
                                     }
                                     scan(model,subDomain);
                                 }
@@ -154,7 +140,7 @@ public class SubDomain {
 //                        scan(model, subdomain);
 //                    }
 
-                    noticeField.setText("done...All done...");
+                    noticeField.setText("Done...All done...");
                     noticeField.paintImmediately(noticeField.getBounds());
 
                 } catch (Exception ex) {

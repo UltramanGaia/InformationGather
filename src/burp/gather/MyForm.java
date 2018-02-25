@@ -22,21 +22,17 @@ public class MyForm {
     private JButton startButton;
     private JTable subDomainTable;
     private JLabel noticeField;
-    private JTextField wydomainPathTextField;
-    private JButton wydomainPathButton;
-    private JTextField wyDicPathTextField;
-    private JButton wyDicPathButton;
+    private JTextField teemoPathTextField;
+    private JButton teemoPathButton;
     private JTextField textField3;
     private JButton browseButton2;
     private JTextField textField4;
     private JButton browseButton3;
-    private JLabel wydomainPathLabel;
-    private JLabel wyDicPath;
+    private JLabel teemoPathLabel;
 
 
     public MyForm() {
         init();
-
     }
 
     public MyForm(IContextMenuInvocation invocation) {
@@ -58,27 +54,17 @@ public class MyForm {
             }
         });
 
-        wydomainPathButton.addMouseListener(new MouseAdapter() {
+        teemoPathButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 String path = browserFiles();
                 if(path != null){
-                    wydomainPathTextField.setText(path);
+                    teemoPathTextField.setText(path);
                 }
             }
         });
 
-        wyDicPathButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                String path = browserFiles();
-                if(path != null){
-                    wyDicPathTextField.setText(path);
-                }
-            }
-        });
     }
 
     public String browserFiles(){
@@ -98,7 +84,7 @@ public class MyForm {
         //subDomainTextField.setText("gbboys");
         System.out.println(subDomainTextField.getText());
         String targetDomain = subDomainTextField.getText();
-        subDomain.querySubDomain(model,noticeField,wydomainPathTextField.getText(),wyDicPathTextField.getText(),targetDomain);
+        subDomain.querySubDomain(model,noticeField, teemoPathTextField.getText(),targetDomain);
 
 //        new Thread(new Runnable() {
 //            @Override
