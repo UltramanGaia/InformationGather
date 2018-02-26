@@ -10,6 +10,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class MyForm {
@@ -19,7 +23,7 @@ public class MyForm {
 
     private JPanel rootPanel;
     private JTabbedPane tabbedPane;
-    private JTextField portsTextField;
+    private JTextField ipTextField;
     private JPasswordField passwordPasswordField;
     private JTextField subDomainTextField;
     private JButton startButton;
@@ -35,7 +39,10 @@ public class MyForm {
     private JTextArea logTextArea;
     private JButton exportButton;
     private JButton importButton;
-
+    private JTree portScanJTree;
+    private JButton addButton;
+    private MyLogger myLogger;
+    private PortScan portScan;
 
     public MyForm() {
         init();
@@ -49,7 +56,7 @@ public class MyForm {
 
     public void init() {
 
-        subDomain = new SubDomain();
+        subDomain = new SubDomain(subDomainTable);
         subDomainTable.setModel(new DefaultTableModel(subDomain.getRowData(), SubDomain.getColumnNames()));
 
         startButton.addMouseListener(new MouseAdapter() {
@@ -83,20 +90,40 @@ public class MyForm {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 String path = browserFiles();
-                if(path != null){
+                if (path != null) {
                     teemoPathTextField.setText(path);
                 }
             }
         });
 
-        MyLogger.getInstance().setLogArea(logTextArea);
+        addButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String ips = ipTextField.getText();
+                final List<String> list = new ArrayList<String>();
+                final Pattern pa = Pattern.compile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b", Pattern.CANON_EQ);
+                final Matcher ma = pa.matcher(ips);
+                while (ma.find()) {
+                    list.add(ma.group());
+                }
+                for (int i = 0; i < list.size(); i++) {
+                    portScan.addIP(list.get(i));
+                }
+            }
+        });
 
+        portScan = PortScan.getInstance();
+        portScan.setJTree(portScanJTree);
+
+        myLogger = MyLogger.getInstance();
+        myLogger.setLogArea(logTextArea);
     }
 
-    public String browserFiles(){
+    public String browserFiles() {
         JFileChooser jf = new JFileChooser();
         jf.showOpenDialog(null);//显示打开的文件对话框
-        File f =  jf.getSelectedFile();//使用文件类获取选择器选择的文件
+        File f = jf.getSelectedFile();//使用文件类获取选择器选择的文件
         String s = f.getAbsolutePath();//返回路径名
         //JOptionPane弹出对话框类，显示绝对路径名
         //JOptionPane.showMessageDialog(null, s, "标题",JOptionPane.WARNING_MESSAGE);
@@ -109,7 +136,7 @@ public class MyForm {
         //subDomainTextField.setText("gbboys");
         System.out.println(subDomainTextField.getText());
         String targetDomain = subDomainTextField.getText();
-        subDomain.querySubDomain(model,noticeField, teemoPathTextField.getText(),targetDomain);
+        subDomain.querySubDomain(model, noticeField, teemoPathTextField.getText(), targetDomain);
 
 //        new Thread(new Runnable() {
 //            @Override
@@ -127,26 +154,25 @@ public class MyForm {
 //        }).start();
     }
 
-    private void importSubdomains(){
+    private void importSubdomains() {
         String path = browserFiles();
         try {
             DefaultTableModel model = JTableWithCSV.CSVToJTable(path, null);
             subDomainTable.setModel(model);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void exportSubdomains(){
+    private void exportSubdomains() {
         String path = browserFiles();
         DefaultTableModel model = (DefaultTableModel) subDomainTable.getModel();
         try {
             JTableWithCSV.JTableToCSV(model, path);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public JPanel getRootPanel() {

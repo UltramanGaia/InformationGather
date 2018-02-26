@@ -7,10 +7,14 @@ import burp.gather.utils.Response;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
-import java.util.Calendar;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SubDomain {
     private static final Object[] columnNames = {"Id", "Domain", "Status", "Title", "IP", "Server"};
@@ -50,10 +54,17 @@ public class SubDomain {
     };
 
     private MyLogger myLogger = null;
+    private JTable subdomainTable = null;
+    private PortScan portScan = null;
 
-    public SubDomain(){
+    public SubDomain(JTable jTable){
         myLogger = MyLogger.getInstance();
+        portScan = PortScan.getInstance();
+        subdomainTable = jTable;
+        subdomainTable.addMouseListener(new SubdomainPopClickListener());
+
     }
+
 
     public static Object[] getColumnNames() {
         return columnNames;
@@ -135,12 +146,10 @@ public class SubDomain {
                          ) {
                         t.start();
                     }
-
                     for (Thread t: threadPool
                          ) {
                         t.join();
                     }
-
 
                     noticeField.setText("Done...All done...");
                     noticeField.paintImmediately(noticeField.getBounds());
@@ -224,5 +233,67 @@ public class SubDomain {
         }
     }
 
+
+    public class SubdomainPopUp extends JPopupMenu {
+
+        JMenuItem anItem;
+        public SubdomainPopUp() {
+            anItem = new JMenuItem("Send to Port Scan");
+            anItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("click send port scan");
+                    int [] selectedRows = subdomainTable.getSelectedRows();
+                    for (int selectedRow:selectedRows
+                         ) {
+                        String content = (String)subdomainTable.getValueAt(selectedRow,4);
+                        System.out.println(content);
+
+                        final List<String> list = new ArrayList<String>();
+                        final Pattern pa = Pattern.compile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b", Pattern.CANON_EQ);
+                        final Matcher ma = pa.matcher(content);
+                        int num = ma.groupCount();
+                        while (ma.find()) {
+                            list.add(ma.group());
+                        }
+                        // if have multiple macher, there might has a cdn,do not use a port scan
+                        if(list.size() == 1){
+                            portScan.addIP((list.get(0)));
+                        }
+//                        for (int i = 0; i < list.size(); i++) {
+//                            portScan.addIP(list.get(i));
+//                        }
+
+                    }
+                }
+            });
+            add(anItem);
+            anItem = new JMenuItem("Send to Dir Scan");
+            anItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("click send dirs scan");
+                }
+            });
+            add(anItem);
+        }
+    }
+
+    public class SubdomainPopClickListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            if (e.isPopupTrigger())
+                doPop(e);
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            if (e.isPopupTrigger())
+                doPop(e);
+        }
+
+        private void doPop(MouseEvent e) {
+            SubdomainPopUp menu = new SubdomainPopUp();
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+    }
 
 }

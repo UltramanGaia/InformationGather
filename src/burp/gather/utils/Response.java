@@ -107,8 +107,6 @@ public class Response {
 	 */
 	public String getTitle(){
 
-
-
 		String s = getBody();
 		String regex;
 		String title = "";

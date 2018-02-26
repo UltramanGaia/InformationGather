@@ -53,7 +53,7 @@ public class JTableWithCSV {
         for (int i = 0; i < numCols; i++) {
             out.write(sep);
             out.write(dtm.getColumnName(i));
-            sep = ",";
+            sep = ",,,";
         }
 
         out.write(LINE_SEP);
@@ -64,7 +64,7 @@ public class JTableWithCSV {
             for (int c = 0; c < numCols; c++) {
                 out.write(sep);
                 out.write(dtm.getValueAt(r, c).toString());
-                sep = ",";
+                sep = ",,,";
             }
 
             out.write(LINE_SEP);
@@ -91,7 +91,7 @@ public class JTableWithCSV {
 
             while (s.hasNextLine()) {
                 rows.add(new Vector<Object>(Arrays.asList(s.nextLine()
-                        .split("\\s*,\\s*",
+                        .split("\\s*,,,\\s*",
                                 -1))));
             }
 
