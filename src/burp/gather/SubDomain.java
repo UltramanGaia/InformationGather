@@ -1,5 +1,6 @@
 package burp.gather;
 
+import burp.gather.utils.MyLogger;
 import burp.gather.utils.NetHelper;
 import burp.gather.utils.Request;
 import burp.gather.utils.Response;
@@ -48,6 +49,12 @@ public class SubDomain {
 
     };
 
+    private MyLogger myLogger = null;
+
+    public SubDomain(){
+        myLogger = MyLogger.getInstance();
+    }
+
     public static Object[] getColumnNames() {
         return columnNames;
     }
@@ -78,6 +85,7 @@ public class SubDomain {
                     String line;
                     while ((line = in.readLine()) != null) {
                         System.out.println(line);
+                        myLogger.logAddLine(line);
                     }
                     in.close();
                     pr.waitFor();
@@ -99,9 +107,7 @@ public class SubDomain {
                         System.out.println(subdomain);
                         subDomains.add(subdomain);
                     }
-
                     model.setRowCount(0);
-
 
                     int t_num = 20;
                     Thread [] threadPool = new Thread[t_num];
@@ -133,12 +139,6 @@ public class SubDomain {
                         t.join();
                     }
 
-
-//                    for (int i = 0; i < jsonSubDomainArray.length(); i++) {
-//                        String subdomain = jsonSubDomainArray.getString(i);
-//                        System.out.println(subdomain);
-//                        scan(model, subdomain);
-//                    }
 
                     noticeField.setText("Done...All done...");
                     noticeField.paintImmediately(noticeField.getBounds());

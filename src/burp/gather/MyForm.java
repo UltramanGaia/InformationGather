@@ -1,6 +1,7 @@
 package burp.gather;
 
 import burp.IContextMenuInvocation;
+import burp.gather.utils.MyLogger;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -29,6 +30,7 @@ public class MyForm {
     private JTextField textField4;
     private JButton browseButton3;
     private JLabel teemoPathLabel;
+    private JTextArea logTextArea;
 
 
     public MyForm() {
@@ -64,6 +66,8 @@ public class MyForm {
                 }
             }
         });
+
+        MyLogger.getInstance().setLogArea(logTextArea);
 
     }
 
@@ -102,7 +106,6 @@ public class MyForm {
 //        }).start();
     }
 
-
     public JPanel getRootPanel() {
         return rootPanel;
     }
@@ -120,7 +123,5 @@ public class MyForm {
         // TODO: place custom component creation code here
         //subDomain = new SubDomain();
         //subDomainTable = new JTable(subDomain.getRowData(),SubDomain.getColumnNames());
-
-
     }
 }
