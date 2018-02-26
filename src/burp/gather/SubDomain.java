@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 public class SubDomain {
-    private static final Object[] columnNames = {"Id", "Domain", "Ip", "Status", "Server", "CDN"};
+    private static final Object[] columnNames = {"Id", "Domain", "Status", "Title", "IP", "Server"};
     private   Object[][] rowData = {
             {null, null, null, null, null, null},
             {null, null, null, null, null, null},
@@ -69,12 +69,12 @@ public class SubDomain {
             public void run() {
 
                 try {
+
                     String teemoRootPath = new File(teemoPath).getParent();
                     Calendar calendar = Calendar.getInstance();
-                    //String t = "-%d-%d-%d-%d-%d"%(, , ,, );
                     String resultFileName = targetDomain + "-"
                             + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DATE)
-                            + "-" + calendar.get(Calendar.HOUR_OF_DAY) + "-"+ calendar.get(Calendar.MINUTE) + "-" +".txt";  //baidu.com.12345679.txt
+                            + "-" + calendar.get(Calendar.HOUR_OF_DAY) + "-"+ calendar.get(Calendar.MINUTE) +".txt";  //baidu.com.18-2-16-13-30.txt
                     System.out.println("Using teemo.py to discover subdomains...");
                     noticeField.setText("Using teemo.py to discover subdomains...");
                     noticeField.paintImmediately(noticeField.getBounds());
@@ -90,8 +90,10 @@ public class SubDomain {
                     in.close();
                     pr.waitFor();
                     System.out.println("Teemo run complete");
-
                     noticeField.setText("Teemo run complete...Try scanning the subdomains.....");
+
+
+
 
                     // parse target domain log
                     HashSet<String> subDomains = new HashSet<String>(); //subdomains
@@ -120,9 +122,9 @@ public class SubDomain {
                                     String subDomain = null;
                                     synchronized (subDomains){
                                         subDomain = subDomains.iterator().next();
-                                        System.out.println(subDomain);
                                         subDomains.remove(subDomain);
                                     }
+                                    System.out.println(subDomain);
                                     scan(model,subDomain);
                                 }
                             }
@@ -154,8 +156,8 @@ public class SubDomain {
 
     public void scan(DefaultTableModel model, String subdomain) {
 
-        // domain ip cdn server
-        String domain = null, ip = null, cdn = null, server = null;
+        // id , domain, status_code , title, ip, server
+        String  title = null, ip = null, server = null;
         Integer code = null;
         Request resquest = new Request("http://" + subdomain);
         resquest.getCon().setReadTimeout(1000);
@@ -170,18 +172,25 @@ public class SubDomain {
         }
         code = response.getResponseCode();
         server = response.getHeader("Server");
+        if(server == null || server.isEmpty()){
+            server = "no server header";
+        }
+        title = response.getTitle();
+        if(title == null || title.isEmpty()){
+            title = "no title";
+        }
+
         String[] temp = NetHelper.getIpAddress(subdomain);
         if (temp == null) {
             return;
         }
         if (temp.length == 1) {
             ip = temp[0];
-            cdn = "NO CDN";
         } else {
-            ip = "";
-            cdn = arrToString(temp);
+            ip = arrToString(temp);
         }
-        model.addRow(new Object[]{model.getRowCount() + 1, subdomain, ip, code, server, cdn});
+
+        model.addRow(new Object[]{model.getRowCount() + 1, subdomain,code, title, ip, server});
     }
 
     public static String arrToString(String[] str) {

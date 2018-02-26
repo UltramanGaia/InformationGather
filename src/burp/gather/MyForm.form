@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="400"/>
+      <xy x="20" y="20" width="565" height="429"/>
     </constraints>
     <properties>
       <minimumSize width="320" height="200"/>
@@ -51,6 +51,20 @@
                       <text value="Start"/>
                     </properties>
                   </component>
+                  <component id="c6b6f" class="javax.swing.JButton" binding="importButton" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <horizontalAlignment value="0"/>
+                      <horizontalTextPosition value="0"/>
+                      <text value="Import"/>
+                    </properties>
+                  </component>
+                  <component id="bd04c" class="javax.swing.JButton" binding="exportButton" default-binding="true">
+                    <constraints/>
+                    <properties>
+                      <text value="Export"/>
+                    </properties>
+                  </component>
                 </children>
               </grid>
               <scrollpane id="92dcb">
@@ -80,6 +94,7 @@
                     <constraints border-constraint="Center"/>
                     <properties>
                       <horizontalAlignment value="2"/>
+                      <horizontalTextPosition value="0"/>
                       <text value="Click start to discover subdomains."/>
                     </properties>
                   </component>
@@ -167,7 +182,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value=""/>
+                      <text value="X:\Tools\ctf\Web\CollectInformation\SubDomain\Teemo\teemo.py"/>
                       <toolTipText value="please select this"/>
                     </properties>
                   </component>

@@ -1,123 +1,113 @@
 package burp.gather.utils;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.table.TableModel;
-import java.awt.*;
-import java.io.File;
+import javax.swing.table.DefaultTableModel;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.Vector;
 
-public class JTableExportCommand {
-    private JTable table = null;
-    private Component parentComp = null;
+public class JTableWithCSV {
 
-    public JTableExportCommand(JTable table, Component parentComp) {
-        this.table = table;
-        this.parentComp = parentComp;
-    }
+    /**
+     * Rudimentary quick and dirty demo code
+     *
+     * @param args (Not used)
+     */
+    public static void main(String[] args) {
+        try {
+            // Read a csv file called 'data.txt' and save it to a more
+            // correctly named 'data.csv'
+            DefaultTableModel m = CSVToJTable("data.txt", null);
+            JFrame f = new JFrame();
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.getContentPane().add(new JScrollPane(new JTable(m)));
+            f.setSize(200, 300);
+            f.setVisible(true);
 
-    public boolean execute() {
-        if (table == null) {
-            return false;
-        }
-        File file = showSaveDialog();
-        if (file != null) {
-            if (file.exists()) {
-                if (JOptionPane.showConfirmDialog(table, "The file already exists, do you want to replace it?") != JOptionPane.YES_OPTION) {
-                    return false;
-                }
-            }
+            JTableToCSV(m, "data.csv");
 
-            return CSVFileWriter.writeTableModel(table, file);
-
-        }
-        return false;
-    }
-
-    private File showSaveDialog() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.removeChoosableFileFilter(chooser.getAcceptAllFileFilter());
-        chooser.addChoosableFileFilter(new CSVFileFilter());
-        //chooser.addChoosableFileFilter(new XMLFileFilter());
-        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        int ret = chooser.showSaveDialog(parentComp);
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
-            FileFilter filter = chooser.getFileFilter();
-
-            String extension = getExtension(f);
-            if (extension == null || !extension.equalsIgnoreCase(((CSVFileFilter) filter).getExtension())) {
-                return new File(f.getAbsolutePath() + "." + ((CSVFileFilter) filter).getExtension());
-            }
-            return f;
-        }
-
-        return null;
-    }
-
-    static class CSVFileFilter extends FileFilter {
-
-        public boolean accept(File f) {
-            if (f != null) {
-                if (f.isDirectory()) {
-                    return true;
-                }
-                if (getExtension().equalsIgnoreCase(JTableExportCommand.getExtension(f))) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public String getDescription() {
-            return "csv format";
-        }
-
-        public String getExtension() {
-            return "csv";
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    static class CSVFileWriter {
-        public static boolean writeTableModel(JTable fTable, File file) {
 
-            if (fTable == null) {
-                return false;
-            }
+    /**
+     * @param dtm         The DefaultTableModel to save to stream
+     * @param outFileName The output file name
+     */
+    public static void JTableToCSV(DefaultTableModel dtm,
+                                   String outFileName) throws IOException {
+        FileWriter out = new FileWriter(outFileName);
 
-            TableModel tableModel = fTable.getModel();
-            StringBuffer fileBuf = new StringBuffer("");
-            int rowCount = tableModel.getRowCount();
-            int columnCount = tableModel.getColumnCount();
-            for (int col = 0; col < columnCount; col++) {
-                fileBuf.append(tableModel.getColumnName(col));
-                fileBuf.append(",");
-            }
-            fileBuf.append("\n");
-            for (int row = 0; row < rowCount; row++) {
-                for (int col = 0; col < columnCount; col++) {
-                    fileBuf.append(tableModel.getValueAt(row, col).toString());
-                    if (col != columnCount - 1) {
-                        fileBuf.append(",");
-                    }
-                }
-                fileBuf.append("\n");
-            }
-            try {
+        final String LINE_SEP = System.getProperty("line.separator");
+        int numCols = dtm.getColumnCount();
+        int numRows = dtm.getRowCount();
 
-                FileWriter writer = new FileWriter(file);
-                writer.write(fileBuf.toString());
-                writer.close();
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace(System.err);
-                return false;
-            }
+        // Write headers
+        String sep = "";
+
+        for (int i = 0; i < numCols; i++) {
+            out.write(sep);
+            out.write(dtm.getColumnName(i));
+            sep = ",";
         }
+
+        out.write(LINE_SEP);
+
+        for (int r = 0; r < numRows; r++) {
+            sep = "";
+
+            for (int c = 0; c < numCols; c++) {
+                out.write(sep);
+                out.write(dtm.getValueAt(r, c).toString());
+                sep = ",";
+            }
+
+            out.write(LINE_SEP);
+        }
+        out.close();
     }
 
+
+    /**
+     * @param inFileName A CSV  file name
+     * @param headers    A Vector containing the column headers. If this is null, it's assumed
+     *                   that the first row contains column headers
+     * @return A DefaultTableModel containing the CSV values as type String
+     */
+    public static DefaultTableModel CSVToJTable(String inFileName,
+                                                Vector<Object> headers) throws IOException {
+        DefaultTableModel model = null;
+        Scanner s = null;
+        FileReader in = new FileReader(inFileName);
+
+        try {
+            Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
+            s = new Scanner(in);
+
+            while (s.hasNextLine()) {
+                rows.add(new Vector<Object>(Arrays.asList(s.nextLine()
+                        .split("\\s*,\\s*",
+                                -1))));
+            }
+
+            if (headers == null) {
+                headers = rows.remove(0);
+                model = new DefaultTableModel(rows, headers);
+            } else {
+                model = new DefaultTableModel(rows, headers);
+            }
+
+            return model;
+        } finally {
+            s.close();
+        }
+    }
 
 
 }
+

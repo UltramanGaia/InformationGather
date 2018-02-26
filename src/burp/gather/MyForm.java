@@ -1,6 +1,7 @@
 package burp.gather;
 
 import burp.IContextMenuInvocation;
+import burp.gather.utils.JTableWithCSV;
 import burp.gather.utils.MyLogger;
 
 import javax.swing.*;
@@ -8,6 +9,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 
 
 public class MyForm {
@@ -31,6 +33,8 @@ public class MyForm {
     private JButton browseButton3;
     private JLabel teemoPathLabel;
     private JTextArea logTextArea;
+    private JButton exportButton;
+    private JButton importButton;
 
 
     public MyForm() {
@@ -53,6 +57,24 @@ public class MyForm {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 startSubDomainQuery(e);
+            }
+        });
+
+        importButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                importSubdomains();
+                JOptionPane.showMessageDialog(null, "import csv to JTable successfully");
+            }
+        });
+
+        exportButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                exportSubdomains();
+                JOptionPane.showMessageDialog(null, "export JTable to csv successfully");
             }
         });
 
@@ -82,7 +104,6 @@ public class MyForm {
     }
 
     private void startSubDomainQuery(MouseEvent e) {
-        //clear all data in table
         DefaultTableModel model = (DefaultTableModel) subDomainTable.getModel();
 
         //subDomainTextField.setText("gbboys");
@@ -104,6 +125,28 @@ public class MyForm {
 //                }
 //            }
 //        }).start();
+    }
+
+    private void importSubdomains(){
+        String path = browserFiles();
+        try {
+            DefaultTableModel model = JTableWithCSV.CSVToJTable(path, null);
+            subDomainTable.setModel(model);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void exportSubdomains(){
+        String path = browserFiles();
+        DefaultTableModel model = (DefaultTableModel) subDomainTable.getModel();
+        try {
+            JTableWithCSV.JTableToCSV(model, path);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     public JPanel getRootPanel() {
