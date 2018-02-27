@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -49,7 +50,7 @@ public class PortScan {
         @Override
         public void run() {
             super.run();
-            String status = "DOWN";
+//            String status = "DOWN";
             ArrayList<String> results = new ArrayList<>();
             try {
 //                String teemoRootPath = new File(nmapPath).getParent();
@@ -63,32 +64,46 @@ public class PortScan {
                 Process pr = Runtime.getRuntime().exec(args1);
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         pr.getInputStream()));
-                String line;
-                while ((line = in.readLine()) != null) {
-                    if(line.indexOf("Up") != -1){
-                        status = "UP";
-                    }
-                    if(line.indexOf("Ports:") != -1){
-                        int l = line.indexOf("Ports:") + 6;
-                        int r = line.indexOf("Seq Index")-2;
-                        String content = line.substring(l,r);
-                        String [] temp = content.split(",");
-                        for (String s:temp
-                             ) {
-                            String t = s.trim();
-                            results.add(s.trim().replaceAll("/|\\ ","."));
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String line;
+                        try {
+                            while ((line = in.readLine()) != null) {
+//                                if (line.indexOf("Up") != -1) {
+//                                    status = "UP";
+//                                }
+                                if (line.indexOf("Ports:") != -1) {
+                                    int l = line.indexOf("Ports:") + 6;
+                                    int r = line.indexOf("Seq Index") - 2;
+                                    String content = line.substring(l, r);
+                                    String[] temp = content.split(",");
+                                    for (String s : temp
+                                            ) {
+                                        String t = s.trim();
+                                        results.add(s.trim().replaceAll("/|\\ ", "."));
+                                    }
+                                }
+                                System.out.println(line);
+                                myLogger.logAddLine(line);
+                            }
+                        }
+                        catch (IOException e){
+                            e.printStackTrace();
                         }
                     }
-                    System.out.println(line);
-                    myLogger.logAddLine(line);
-                }
-                in.close();
+                }).start();
+
+                //in.close();
                 pr.waitFor();
             }catch (Exception e){
                 e.printStackTrace();
             }
-            if(status.equals("DOWN"))
+//            if(status.equals("DOWN"))
+//                return;
+            if(results.size()==0)
                 return;
+
             // add results
             DefaultMutableTreeNode root = (DefaultMutableTreeNode) jTreeModel.getRoot();
             Enumeration children = root.children();

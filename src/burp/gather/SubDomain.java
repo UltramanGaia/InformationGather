@@ -84,7 +84,7 @@ public class SubDomain {
                     String teemoRootPath = new File(teemoPath).getParent();
                     Calendar calendar = Calendar.getInstance();
                     String resultFileName = targetDomain + "-"
-                            + calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.get(Calendar.DATE)
+                            + calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH)+1) + "-" + calendar.get(Calendar.DATE)
                             + "-" + calendar.get(Calendar.HOUR_OF_DAY) + "-"+ calendar.get(Calendar.MINUTE) +".txt";  //baidu.com.18-2-16-13-30.txt
                     System.out.println("Using teemo.py to discover subdomains...");
                     noticeField.setText("Using teemo.py to discover subdomains...");
@@ -103,16 +103,12 @@ public class SubDomain {
                     System.out.println("Teemo run complete");
                     noticeField.setText("Teemo run complete...Try scanning the subdomains.....");
 
-
-
-
                     // parse target domain log
                     HashSet<String> subDomains = new HashSet<String>(); //subdomains
                     String logFileName = teemoRootPath + File.separator + "output" + File.separator +  resultFileName;
                     String logFileContent = readToString(logFileName);
 //                    System.out.println(logFileContent);
                     Scanner scanner = new Scanner(logFileContent);
-
                     while(scanner.hasNext()){
                         String subdomain = scanner.next();
                         if(subdomain.indexOf('@') != -1) //result end

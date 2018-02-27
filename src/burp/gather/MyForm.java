@@ -24,7 +24,6 @@ public class MyForm {
     private JPanel rootPanel;
     private JTabbedPane tabbedPane;
     private JTextField ipTextField;
-    private JPasswordField passwordPasswordField;
     private JTextField subDomainTextField;
     private JButton startButton;
     private JTable subDomainTable;
