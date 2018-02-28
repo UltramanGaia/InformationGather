@@ -89,16 +89,7 @@
                   <visible value="true"/>
                 </properties>
                 <border type="none"/>
-                <children>
-                  <component id="daca0" class="javax.swing.JLabel" binding="noticeField">
-                    <constraints border-constraint="Center"/>
-                    <properties>
-                      <horizontalAlignment value="2"/>
-                      <horizontalTextPosition value="0"/>
-                      <text value="Click start to discover subdomains."/>
-                    </properties>
-                  </component>
-                </children>
+                <children/>
               </grid>
             </children>
           </grid>

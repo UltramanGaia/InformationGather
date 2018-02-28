@@ -54,9 +54,10 @@ public class MyForm {
     }
 
     public void init() {
-
-        subDomain = new SubDomain(subDomainTable);
+        subDomain = SubDomain.getInstance();
+        subDomain.setJTable(subDomainTable);
         subDomainTable.setModel(new DefaultTableModel(subDomain.getRowData(), SubDomain.getColumnNames()));
+        subDomain.setTeemoPath(teemoPathTextField.getText());
 
         startButton.addMouseListener(new MouseAdapter() {
             @Override
@@ -92,6 +93,7 @@ public class MyForm {
                 if (path != null) {
                     teemoPathTextField.setText(path);
                 }
+                subDomain.setTeemoPath(teemoPathTextField.getText());
             }
         });
 
@@ -135,7 +137,7 @@ public class MyForm {
         //subDomainTextField.setText("gbboys");
         System.out.println(subDomainTextField.getText());
         String targetDomain = subDomainTextField.getText();
-        subDomain.querySubDomain(model, noticeField, teemoPathTextField.getText(), targetDomain);
+        subDomain.addTargetDomain(targetDomain);
 
 //        new Thread(new Runnable() {
 //            @Override

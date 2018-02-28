@@ -37,7 +37,6 @@ public class PortScan {
         jTreeModel.insertNodeInto(new DefaultMutableTreeNode(ip), root, root.getChildCount());
         new NmapScan(ip).start();
 
-
     }
 
     class NmapScan extends Thread{
