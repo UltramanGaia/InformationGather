@@ -20,6 +20,8 @@ public class MyForm {
 
     private IContextMenuInvocation invocation = null; //BurpContext
     SubDomain subDomain = null;
+    private PortScan portScan;
+    InfoLeak infoLeak = null;
 
     private JPanel rootPanel;
     private JTabbedPane tabbedPane;
@@ -40,8 +42,12 @@ public class MyForm {
     private JButton importButton;
     private JTree portScanJTree;
     private JButton addButton;
+    private JTable infoLeakTable;
+    private JLabel URL;
+    private JTextField urlTextField;
+    private JButton addURLButton;
     private MyLogger myLogger;
-    private PortScan portScan;
+
 
     public MyForm() {
         init();
@@ -116,6 +122,20 @@ public class MyForm {
 
         portScan = PortScan.getInstance();
         portScan.setJTree(portScanJTree);
+
+        infoLeak = InfoLeak.getInstance();
+        infoLeak.setJTable(infoLeakTable);
+        infoLeakTable.setModel(new DefaultTableModel(infoLeak.getRowData(), InfoLeak.getColumnNames()));
+
+        addURLButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                String url = urlTextField.getText();
+                infoLeak.addTargetURL(url);
+            }
+        });
+
 
         myLogger = MyLogger.getInstance();
         myLogger.setLogArea(logTextArea);

@@ -149,14 +149,51 @@
               </scrollpane>
             </children>
           </grid>
-          <grid id="e907c" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
+          <grid id="e907c" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints>
               <tabbedpane title="InfoLeak"/>
             </constraints>
             <properties/>
             <border type="none"/>
-            <children/>
+            <children>
+              <grid id="79fa9" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+                <constraints border-constraint="North"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="22e59" class="javax.swing.JLabel" binding="URL">
+                    <constraints/>
+                    <properties>
+                      <text value="URL: "/>
+                    </properties>
+                  </component>
+                  <component id="3562d" class="javax.swing.JTextField" binding="urlTextField">
+                    <constraints/>
+                    <properties>
+                      <columns value="20"/>
+                      <text value="www.baidu.com"/>
+                    </properties>
+                  </component>
+                  <component id="6f850" class="javax.swing.JButton" binding="addURLButton">
+                    <constraints/>
+                    <properties>
+                      <text value="Add"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
+              <scrollpane id="1ca31">
+                <constraints border-constraint="Center"/>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="102f4" class="javax.swing.JTable" binding="infoLeakTable">
+                    <constraints/>
+                    <properties/>
+                  </component>
+                </children>
+              </scrollpane>
+            </children>
           </grid>
           <grid id="f5516" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
@@ -189,7 +226,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value="X:\Tools\ctf\Web\CollectInformation\SubDomain\Teemo\teemo.py"/>
+                      <text value=""/>
                       <toolTipText value="please select this"/>
                     </properties>
                   </component>

@@ -25,12 +25,12 @@ public class SubDomain {
     private JTable subdomainTable = null;
     private String teemoPath = null;
     private PortScan portScan = null;
+    private InfoLeak infoLeak = null;
 
     private SubDomain() {
         myLogger = MyLogger.getInstance();
         portScan = PortScan.getInstance();
-
-
+        infoLeak = InfoLeak.getInstance();
 
     }
 
@@ -155,6 +155,7 @@ public class SubDomain {
         String title = null, ip = null, server = null;
         Integer code = null;
         Request resquest = new Request("http://" + subdomain);
+        resquest.getCon().setConnectTimeout(3000);
         resquest.getCon().setReadTimeout(1000);
         System.out.println("Scanner--->  http://" + subdomain);
         resquest.setMethod("GET");
@@ -206,6 +207,7 @@ public class SubDomain {
                         String content = (String) subdomainTable.getValueAt(selectedRow, 4);
                         System.out.println(content);
 
+
                         final List<String> list = new ArrayList<String>();
                         final Pattern pa = Pattern.compile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b", Pattern.CANON_EQ);
                         final Matcher ma = pa.matcher(content);
@@ -225,11 +227,18 @@ public class SubDomain {
                 }
             });
             add(anItem);
-            anItem = new JMenuItem("Send to Dir Scan");
+            anItem = new JMenuItem("Send to Info Leck");
             anItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("click send dirs scan");
+                    System.out.println("click send info leck");
+                    int[] selectedRows = subdomainTable.getSelectedRows();
+                    for (int selectedRow : selectedRows
+                            ) {
+                        String content = (String) subdomainTable.getValueAt(selectedRow, 1);
+                        System.out.println(content);
+                        infoLeak.addTargetURL(content);
+                    }
                 }
             });
             add(anItem);
