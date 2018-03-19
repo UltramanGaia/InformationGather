@@ -156,7 +156,7 @@ public class SubDomain {
         Integer code = null;
         Request resquest = new Request("http://" + subdomain);
         resquest.getCon().setConnectTimeout(3000);
-        resquest.getCon().setReadTimeout(1000);
+//        resquest.getCon().setReadTimeout(3000);
         System.out.println("Scanner--->  http://" + subdomain);
         resquest.setMethod("GET");
         resquest.setFollowRedirects(true);

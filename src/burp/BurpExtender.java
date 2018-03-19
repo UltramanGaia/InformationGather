@@ -1,5 +1,6 @@
 package burp;
 import burp.gather.ContextMenuFactory;
+import burp.gather.ScannerCheck;
 
 import java.io.PrintWriter;
 public class BurpExtender implements IBurpExtender
@@ -32,6 +33,8 @@ public class BurpExtender implements IBurpExtender
         callbacks.setExtensionName("InfoGather");
 
         callbacks.registerContextMenuFactory(new ContextMenuFactory());
+
+        callbacks.registerScannerCheck(new ScannerCheck());
 
         stdout = new PrintWriter(callbacks.getStdout(), true);
         // load extender successfully.

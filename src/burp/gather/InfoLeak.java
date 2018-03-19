@@ -107,6 +107,7 @@ public class InfoLeak {
         String dr_store = _RequestGETStatus(url+"/.DS_Store");
         String hg = _RequestGETStatus(url+"/.hg/");
         System.out.println(url + " -> git: " + git + " svn: "+ svn + " cvs: "+ cvs+" web_inf: "+web_inf+" dr_store: " + dr_store + " hg: "+ hg );
+        myLogger.logAddLine(url + " -> git: " + git + " svn: "+ svn + " cvs: "+ cvs+" web_inf: "+web_inf+" dr_store: " + dr_store + " hg: "+ hg);
         if(!(git.equals(svn)  && git.equals(cvs) && git.equals(web_inf) && git.equals(dr_store) && git.equals(hg)   )) {
             model.addRow(new Object[]{model.getRowCount() + 1, url, git, svn, cvs, web_inf, dr_store, hg});
         }
@@ -119,6 +120,7 @@ public class InfoLeak {
         dr_store = _RequestGETStatus(url+"/.DS_Store");
         hg = _RequestGETStatus(url+"/.hg/");
         System.out.println(url + " -> git: " + git + " svn: "+ svn + " cvs: "+ cvs+" web_inf: "+web_inf+" dr_store: " + dr_store + " hg: "+ hg );
+        myLogger.logAddLine(url + " -> git: " + git + " svn: "+ svn + " cvs: "+ cvs+" web_inf: "+web_inf+" dr_store: " + dr_store + " hg: "+ hg);
         if(!(git.equals(svn)  && git.equals(cvs) && git.equals(web_inf) && git.equals(dr_store) && git.equals(hg)   )) {
             model.addRow(new Object[]{model.getRowCount() + 1, url, git, svn, cvs, web_inf, dr_store, hg});
         }

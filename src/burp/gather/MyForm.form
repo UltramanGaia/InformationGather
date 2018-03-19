@@ -226,7 +226,7 @@
                       </grid>
                     </constraints>
                     <properties>
-                      <text value=""/>
+                      <text value="X:\Tools\ctf\Web\CollectInformation\SubDomain\Teemo\teemo.py"/>
                       <toolTipText value="please select this"/>
                     </properties>
                   </component>
